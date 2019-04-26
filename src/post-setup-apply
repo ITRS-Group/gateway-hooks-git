@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# If no comment add a blank Comment
+if [[ "$_COMMENT"  == "" ]]; then
+  _COMMENT="Comment missing"
+fi
+
+# If no user add a Unknown user
+if [[ "$_USER" == "" ]]; then
+  _USER="unknown"
+fi
+
+# If no workstation add an Unknown workstation
+if [[ "$_WORKSTATION" == "" ]]; then
+  _WORKSTATION="unknown"
+fi
+w=$_WORKSTATION
+fu=$_USER
+su=${fu#*\\}
+
+
+if [[ ! -e .git ]]; then 
+   git init > /dev/null
+fi
+
+# Place User comment in file
+echo "$_COMMENT" > comment.txt
+
+# Stage the  xml files
+git add *.xml  > /dev/null
+
+# Commit the changes to git
+git commit --file=comment.txt --author="$su <$su@$w>" > /dev/null
+
+# Cleanup
+rm comment.txt
+
+# Return version information to Git
+ver=`git log --format="%h" -n 1`
+echo "<setup><files>"
+for f in $( ls *.xml */*.xml); do
+	echo "<file><path>$f</path><version>$ver</version></file>"
+done
+echo "</files></setup>"
+

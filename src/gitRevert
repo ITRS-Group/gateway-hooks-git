@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo git revert --no-edit $(git rev-list $1..HEAD)
+git revert --no-edit $(git rev-list $1..HEAD)
+pkill gateway2 --signal USR1
